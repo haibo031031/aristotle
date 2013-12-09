@@ -15,5 +15,5 @@ It includes three major components:
 =========
 The script is written Jianbin Fang from Delft Unviersity of Tehchnology, the Netherlands. 
 
-Dates: 09/12/2013
+Date: 09/12/2013
 
