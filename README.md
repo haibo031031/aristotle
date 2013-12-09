@@ -13,7 +13,7 @@ It includes three major components:
 (3) Composer V1.1-- Generate code with and without local memory (2+ same MAPs)
 
 =========
-The script is written Jianbin Fang from Delft Unviersity of Tehchnology, the Netherlands. 
+The script is written by Jianbin Fang from Delft Unviersity of Tehchnology, the Netherlands. 
 
 Date: 09/12/2013
 
