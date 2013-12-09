@@ -1,0 +1,82 @@
+
+/*
+	mixed opt. kernel with local memory (multiple data structures)
+*/
+
+#define WG 16
+#define R 0
+#define WD (WG*2+2*R)	// the width of the local space
+#define HT (WG+2*R)	// the height of the local space
+
+//__kernel void kernelLMC(const __global float *in1, const __global float *in2, __global float *out, const int cdim, const int rdim)
+__kernel void kernelLMC(const __global float *in0, const __global float *in1, const __global float *in2, const __global float *in3, __global float *out, const int cdim, const int rdim, const int cdimIn, const int rdimIn)
+{
+	int tgx = get_global_id(0);
+	int tgy = get_global_id(1);
+	int tlx = get_local_id(0);
+	int tly = get_local_id(1);
+	int wgx = get_group_id(0);
+	int wgy = get_group_id(1);
+	int bx=(wgy+wgx)*WG;
+	int by=(0)*WG;
+	// allocate local memory
+	//__local float LM1[WG];
+	//__local float LM2[WG];
+	__local float LM0[WD*HT];
+	__local float LM1[WD*HT];
+	__local float LM2[WD*HT];
+	__local float LM3[WD*HT];
+
+	float retVal0 = 0.0f;
+	float retVal1 = 0.0f;
+	float retVal2 = 0.0f;
+	float retVal3 = 0.0f;
+
+	
+	int rr = 0;
+	int ll = 0;
+	for(rr=0; rr<cdim; rr=rr+HT)
+	{
+		// load data from GM to LM	
+		if(1==1){//central data (base) 
+			int dl = (tly+R) * WD + (tlx+R);
+			int dg = (bx+tlx)+(by+tly+rr)*cdimIn;
+			LM0[dl] = in0[dg];
+			LM1[dl] = in1[dg];
+			LM2[dl] = in2[dg];
+			LM3[dl] = in3[dg];
+		}
+		if(1==1){//central data (horizontal) 
+			int dl = (tly+R) * WD + (tlx+R+WG);
+			int dg = (bx+tlx+WG)+(by+tly+rr)*cdimIn;
+			LM0[dl] = in0[dg];
+			LM1[dl] = in1[dg];
+			LM2[dl] = in2[dg];
+			LM3[dl] = in3[dg];
+		}
+	
+		barrier(CLK_LOCAL_MEM_FENCE);	
+		// use the data elements in LM
+		int useIdx=(tly+tlx);
+		for(ll=0; ll<HT; ll++)
+		{
+			retVal0 += LM0[useIdx+ll*WD];
+			retVal1 += LM1[useIdx+ll*WD];
+			retVal2 += LM2[useIdx+ll*WD];
+			retVal3 += LM3[useIdx+ll*WD];
+		}
+		barrier(CLK_LOCAL_MEM_FENCE);		
+	}
+	// use global memory
+	int gmIdx=(0)*cdimIn+(tgy+tgx);
+	for(rr=0; rr<rdim; rr=rr+1){
+		
+	}
+
+	// output
+	//out[y*cdim+x] = retVal1 + retVal2;
+	out[tgy*cdim+tgx] = retVal0+retVal1+retVal2+retVal3;
+
+	return ;
+}
+

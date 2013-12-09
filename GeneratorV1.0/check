@@ -1,0 +1,69 @@
+#!/bin/bash
+dirName="/home/jfang/GeneratorV0.31"
+macroS='./template/macro.template.h'
+macroD='./template/macro.h'
+dataset=(128)
+map=(107 108 109 110 112 113 114 115 116 204 205 211 302 303 306 407 408 409 410 412 413 414 415 416 507 508 509 510 512 513 514 515 516)
+N=8
+platforms=(c1060 c2050 k20m hd7970 x5650 snb opteron phi)
+pfconfig=('-p 0 -t gpu -d 1' '-p 2 -t gpu -d 0' '-p 2 -t gpu -d 0' '-p 0 -t gpu -d 0' '-p 1 -t cpu -d 0' '-p 1 -t cpu -d 0' '-p 1 -t cpu -d 0' '-p 0 -t acc -d 0')
+
+# get parameters
+echo $#
+if [ $# -lt 1 ]; then
+	echo "please input your target platform:"
+	echo "available platforms: "${platforms[*]}
+	exit 2
+fi
+
+# get index and the configure file
+idx=0
+cnt=0
+for elem in "${platforms[@]}"
+do
+	if [ $elem = $1 ]; then
+		idx=$cnt		
+	fi
+	cnt=$(($cnt+1))
+done
+fName="${dirName}/check.${platforms[$idx]}.txt"
+
+# change the template file
+  # macro.h
+VARIFY="#define VARIFY"
+cat ${macroS} | sed "s/@VARIFY/${VARIFY}/g" > ${macroD}
+  # Makefile
+
+# generate checking code
+if [ $# -eq 2 ]; then
+	echo "re-generate the source code ..."
+	bash ./generator.sh 
+fi
+
+over=(v1)
+iver=(vv0 vv1)
+# remove file
+if [ -f "$fName" ]; then
+	rm ${fName}
+fi  
+  
+# check results
+for m in ${map[@]}; do
+	cd ./${m}
+	for v in ${over[@]}; do
+		cd ./${v}
+		for vv in ${iver[@]}; do
+			cd ./${vv}
+			make clean foo=${platforms[$idx]}; make foo=${platforms[$idx]}
+			echo -en "(${m}, ${v}, ${vv})\t" >> ${fName}
+			./app.${platforms[$idx]} 128 ${platforms[$idx]}  0 ${pfconfig[$idx]}  | grep "check:" >> ${fName}
+			echo "" >> ${fName}
+			cd ../
+		done
+		cd ../
+	done
+	cd ../
+done
+
+
+

@@ -1,0 +1,10 @@
+	int rr = 0;
+	int ll = 0;
+	for(rr=0; rr<cdim; rr=rr+HT)
+	{
+		@lmLoad
+		barrier(CLK_LOCAL_MEM_FENCE);	
+		@lmUse
+		barrier(CLK_LOCAL_MEM_FENCE);		
+	}
+

@@ -1,0 +1,38 @@
+
+
+TODO:
+(1) to find out which part of the code is iMAP dependent (MARK it). In this way, you can address the difference only. 
+
+(2) iMAP2: two ways of using global memory
+	Option I: when using local memory
+	Option II: after using local memory (choose to use this one for implementation simplicity)
+
+	for(cc=0; cc<cdim; cc=cc+WD)
+	{
+		// load data from GM to LM	
+		@lmLoad
+		barrier(CLK_LOCAL_MEM_FENCE);	
+		// use the data elements in LM
+		@lmUse
+		@gmUse (Option I)
+		barrier(CLK_LOCAL_MEM_FENCE);		
+	}
+	@gmUse (Option II)
+
+(3) iMAP4: how we deal with the borders (extended image or use border judging)
+	-- extended matrix
+	-- border/bound judging (preferred)
+
+(4) iMAP4: now we are using a generic way to describe the map and may load more data than what we need (our original code should be better in terms of performance)
+	-- first make it generic
+
+(5) Still need to make the data loading process generic ?? (to use the concept of scope/domain)
+	-- starting with iMAP4
+	-- how we implement the generic template (of loading data into local memory)
+	(1) the number of reads (1 or 2), (2) read directions (vertical or horizontal)
+	-- done
+	-- continue with the other iMAPs
+(6) iMAP5
+	-- choose to extended matrix (preferred)
+	-- 
+

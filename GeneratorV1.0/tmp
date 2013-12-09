@@ -1,0 +1,140 @@
+
+/*
+	mixed opt. kernel with local memory (multiple data structures)
+*/
+
+#define WG 16
+#define R 1
+#define WD (WG*2+2*R)	// the width of the local space
+#define HT (WG*2+2*R)	// the height of the local space
+
+//__kernel void kernelLMC(const __global float *in1, const __global float *in2, __global float *out, const int cdim, const int rdim)
+__kernel void kernelLMC(const __global float *in0, __global float *out, const int cdim, const int rdim, const int cdimIn, const int rdimIn)
+{
+	int tgx = get_global_id(0);
+	int tgy = get_global_id(1);
+	int tlx = get_local_id(0);
+	int tly = get_local_id(1);
+	int wgx = get_group_id(0);
+	int wgy = get_group_id(1);
+	int bx=(wgy+wgx)*WG;
+	int by=(wgy+wgx)*WG;
+	// allocate local memory
+	//__local float LM1[WG];
+	//__local float LM2[WG];
+	__local float LM0[WD*HT];
+
+	float retVal0 = 0.0f;
+
+	
+	// load data from GM to LM	
+	if(1==1){//central data (base) 
+		int dl = (tly+R) * WD + (tlx+R);
+		int dg = (bx+tlx+1)+(by+tly+1)*cdimIn;
+		LM0[dl] = in0[dg];
+	}
+	if(1==1){//central data (vertical) 
+		int dl = (tly+R+WG) * WD + (tlx+R);
+		int dg = (bx+tlx+1)+(by+tly+WG+1)*cdimIn;
+		LM0[dl] = in0[dg];
+	}
+	if(1==1){//central data (horizontal) 
+		int dl = (tly+R) * WD + (tlx+R+WG);
+		int dg = (bx+tlx+WG+1)+(by+tly+1)*cdimIn;
+		LM0[dl] = in0[dg];
+	}
+	if(1==1){//central data (diagonal) 
+		int dl = (tly+R+WG) * WD + (tlx+R+WG);
+		int dg = (bx+tlx+WG+1)+(by+tly+WG+1)*cdimIn;
+		LM0[dl] = in0[dg];
+	}
+	
+	if(tly<R){//top and bottom data 
+		int bbx = bx + tlx;
+		int bby = by - R + tly;
+		int dl = (tly) * WD + (tlx+R);
+		int dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		dl = (tly) * WD + (tlx+R+WG);
+		dg = (bbx+WG+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		bby = by + 2*WG + tly;
+		dl = (tly+R+2*WG) * WD + (tlx+R);
+		dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		dl = (tly+R+2*WG) * WD + (tlx+R+WG);
+		dg = (bbx+WG+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+	}
+	if(tlx<R){//left and right data 
+		int bbx = bx + tlx - R;
+		int bby = by + tly;
+		int dl = (tly+R) * WD + (tlx);
+		int dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		dl = (tly+R+WG) * WD + (tlx);
+		dg = (bbx+1) + (bby+WG+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		bbx = bx + tlx + 2*WG;
+		dl = (tly+R) * WD + (tlx+R+2*WG);
+		dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		dl = (tly+R+WG) * WD + (tlx+R+2*WG);
+		dg = (bbx+1) + (bby+WG+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+	}
+	if((tlx<R)&&(tly<R)){//corner data 
+		int bbx = bx + tlx - R;
+		int bby = by + tly - R;
+		int dl = (tly) * WD + (tlx);
+		int dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		bbx = bx + tlx + 2*WG;
+		bby = by + tly - R;
+		dl = (tly) * WD + (tlx+R+2*WG);
+		dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		bbx = bx + tlx - R;
+		bby = by + tly + 2*WG;
+		dl = (tly+R+2*WG) * WD + (tlx);
+		dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+		bbx = bx + tlx + 2*WG;
+		bby = by + tly + 2*WG;
+		dl = (tly+R+2*WG) * WD + (tlx+R+2*WG);
+		dg = (bbx+1) + (bby+1) * cdimIn;
+		LM0[dl] = in0[dg];
+
+	}
+	barrier(CLK_LOCAL_MEM_FENCE);	
+
+	// use the data elements in LM
+	int idxww = ((tly+tlx)+R);
+	int idxhh = ((tly+tlx)+R);
+	retVal0 = LM0[(idxhh-1)*WD+(idxww)]+LM0[(idxhh)*WD+(idxww-1)]+LM0[(idxhh)*WD+(idxww)]+LM0[(idxhh)*WD+(idxww+1)]+LM0[(idxhh+1)*WD+(idxww)];
+
+	barrier(CLK_LOCAL_MEM_FENCE);		
+
+	// use global memory
+	int idxW=((tgy+tgx)+R);
+	int idxH=((tgy+tgx)+R);
+
+
+	// output
+	//out[y*cdim+x] = retVal1 + retVal2;
+	out[tgy*cdim+tgx] = retVal0;
+
+	return ;
+}
+

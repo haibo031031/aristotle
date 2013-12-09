@@ -1,0 +1,51 @@
+astron:
+-----------------------------------------------------------------------------
+1. HD6970	todo
+  cannot locate the GPU for now. John says he has removed the GPU. 
+2. GTX580	done
+3. Operand 6172	running
+
+VU:
+-----------------------------------------------------------------------------
+1. 
+2. GTX480	done --> C2050 
+3. C2050	done 
+4. GTX680	done
+  preserve -native '-l gpu=GTX680' -t 1:00
+5. k20m		done
+
+6. HD7970	todo
+
+7. Phi		done
+8. E5620	done
+9. X5650	running
+10.E6-2620(SB)	done
+
+local:
+-----------------------------------------------------------------------------
+1. GTX280	done --> C1060 (due to GTX280's unstability)
+
+============================================================================
+Hareware list by vendor
+
+1. NVIDIA (Tesla)
+  -- C1060 (dutijc)	done
+  -- C2050 (node061: -p 2 -t gpu -d 0)	
+  -- K20 (node081 [k20m]: -p 2 -t gpu -d 0)
+
+2. AMD GPU
+  -- HD7970 (node076: -p 0 -t gpu -d 0)
+3. Intel (Xeon CPUs)
+  -- E5620 (D4)
+  -- X5650 (D6) (node074: -p 1 -t cpu -d 0)
+  -- E5-2620 (S6) (node082: -p 1 -t cpu -d 0)
+
+4. AMD CPU
+  -- Operand 6172 (node075??-p 1 -t cpu -d 0)
+
+5. Intel Xeon Phi
+  -- Xeon Phi 5110P (node078: -p 0 -t acc -d 0)
+
+
+
+

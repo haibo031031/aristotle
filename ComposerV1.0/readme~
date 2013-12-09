@@ -1,0 +1,6 @@
+This tool is used to generate code for any combination (of 4 MAPs).
+1. each combination has 4 MAPs and we use local memory in a incremental manner (from left to right).
+
+Assumptions:
+-- the datasets for the 4 MAPs are the same.
+-- 
