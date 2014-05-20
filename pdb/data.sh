@@ -22,7 +22,7 @@ for pf in ${platform[@]}; do
 		reset	
 		set terminal png 20
 		set output "$outname"	
-		set key ins vert
+		set key out hori
 		set key top left
 		set style line 1  lt 1 lw 10 pt 8 ps 0 lc rgb "#D55E00"
 		set style line 2  lt 2 lw 10 pt 6 ps 0 lc rgb "#56B4E9"
@@ -35,7 +35,7 @@ for pf in ${platform[@]}; do
 		set xtics ("128" 0, "256" 1, "512" 2, "1024" 3, "2048" 4, "4096" 5)
 		set xlabel "data sets"
 		set ylabel "bandwidth (GB/s)"				
-		plot "${db1}" using 0:23:24 with yerrorlines title '' ls 1, "${db2}" using 0:23:24 with yerrorlines title '' ls 2
+		plot "${db1}" using 0:23:24 with yerrorlines title 'w/o LM' ls 1, "${db2}" using 0:23:24 with yerrorlines title 'w/ LM' ls 2
 EOF
 		#-----------------------------------------------------
 		#		end plotting
