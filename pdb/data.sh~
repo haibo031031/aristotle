@@ -19,11 +19,9 @@ for pf in ${platform[@]}; do
 		#		begin plotting
 		#-----------------------------------------------------
 		gnuplot <<EOF
-		reset
-		#set terminal postscript eps color enhanced 24
-		set terminal postscript eps color enhanced 24
-		set output "$outname"
-		#unset key; unset tics; unset border
+		reset	
+		set terminal png 20
+		set output "$outname"	
 		set key ins vert
 		set key top left
 		set style line 1  lt 1 lw 10 pt 8 ps 0 lc rgb "#D55E00"
@@ -34,19 +32,9 @@ for pf in ${platform[@]}; do
 		#set tics out
 		set autoscale  y
 		set logscale y 2
-		#set yrange [0:*]		
-		#set xtic rotate by 0 scale 0
-		#set xtics ("128" 1, "256" 2, "512" 3, "1024" 4, "2048" 5, "4096" 6)
 		set xtics ("128" 0, "256" 1, "512" 2, "1024" 3, "2048" 4, "4096" 5)
-		#set xtics ("" 0, "" 1, "" 2, "" 3, "" 4, "" 5)
-		#plot "${db}" using 1 title '' with linespoints ls 1,  "$db" using $idx title '' with linespoints ls 2		
-		#set terminal postscript eps color enhanced 24
-		#set output "$outname"
-		#max=GPVAL_Y_MAX
-		#min=GPVAL_X_MAX
-		#set label 1 gprintf("max=%g", max) at 0, max font "Helvetica,80"
-		#set label 2 gprintf("min=%g", min) at 0, 0 font "Helvetica,50"
-		#set yrange [0:*]		
+		set xlabel "data sets"
+		set ylabel "data sets"				
 		plot "${db1}" using 0:23:24 with yerrorlines title '' ls 1, "${db2}" using 0:23:24 with yerrorlines title '' ls 2
 EOF
 		#-----------------------------------------------------
