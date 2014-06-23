@@ -1,6 +1,0 @@
-This tool is used to generate code for 4 data structures, which are the same MAP.
-1. each combination has 4 data structures and we use local memory in a incremental manner (from left to right).
-
-Assumptions:
--- 4 MAPs are the same.
--- 
